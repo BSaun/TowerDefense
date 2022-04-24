@@ -332,10 +332,10 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         }
         playing = true;
         if (localStorage.getItem('MyGame.controls') === null) {
-            myKeyboard.registerCommand(85, upgrade);
-            myKeyboard.registerCommand(83, sell);
+            myKeyboard.registerCommand(83, upgrade);
+            myKeyboard.registerCommand(85, sell);
             myKeyboard.registerCommand(71, nextLevel);
-            localStorage['MyGame.controls'] = JSON.stringify([85, 83, 71]);
+            localStorage['MyGame.controls'] = JSON.stringify([83, 85, 71]);
         }
         myKeyboard.registerCommand(27, function () {
             //

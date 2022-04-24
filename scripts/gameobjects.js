@@ -250,6 +250,14 @@ MyGame.objects = (function (graphics) {
         that.placeCost = spec.placeCost;
         that.refundCost = Math.floor(spec.placeCost * .75);
 
+        let costText = Text({
+            text: spec.costText,
+            font: '24pt Times New Roman',
+            fillStyle: 'rgba(255, 255, 255, 1)',
+            strokeStyle: 'rgba(0, 0, 0, 1)',
+            position: {x: spec.center.x - spec.size.width / 2, y: spec.center.y + spec.size.height / 2}
+        });
+
         let hasTarget = false;
         let weaponSprite = graphics.Sprite({
             sprite: spec.weaponSprites[0],
@@ -342,7 +350,7 @@ MyGame.objects = (function (graphics) {
                 weaponSprite.drawArc(spec.range);
             }
             if (spec.renderCost) {
-
+                costText.render();
             }
         };
 
@@ -430,6 +438,7 @@ MyGame.objects = (function (graphics) {
         spec.placeCost = 50;
         spec.ground = true;
         spec.flying = false;
+        spec.costText = 'Projectile: $' + spec.placeCost.toString();
 
         spec.fire = function () {
             let bulletSpec = JSON.parse(JSON.stringify(spec));
@@ -451,6 +460,7 @@ MyGame.objects = (function (graphics) {
         spec.placeCost = 300;
         spec.ground = true;
         spec.flying = false;
+        spec.costText = 'Bomb: $' + spec.placeCost.toString();
 
         spec.fire = function () {
             let bulletSpec = JSON.parse(JSON.stringify(spec));
@@ -472,6 +482,7 @@ MyGame.objects = (function (graphics) {
         spec.placeCost = 100;
         spec.ground = false;
         spec.flying = true;
+        spec.costText = 'Missile: $' + spec.placeCost.toString();
 
         spec.fire = function () {
             let bulletSpec = JSON.parse(JSON.stringify(spec));
@@ -494,6 +505,7 @@ MyGame.objects = (function (graphics) {
         spec.placeCost = 200;
         spec.ground = true;
         spec.flying = true;
+        spec.costText = 'Flak: $' + spec.placeCost.toString();
 
         spec.fire = function () {
             let bulletSpec = JSON.parse(JSON.stringify(spec));
