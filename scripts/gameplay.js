@@ -304,7 +304,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         DOWN_CELL = maze[7][14];
         let entryPoints = [LEFT_CELL, RIGHT_CELL, UP_CELL, DOWN_CELL];
 
-        startCell = UP_CELL;
+        startCell = LEFT_CELL;
         lastCell = RIGHT_CELL;
         for (let i = 0; i < MAZE_SIZE; i++) {
             let wall = {};

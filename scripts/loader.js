@@ -1,5 +1,5 @@
 MyGame = {
-    screens : {},
+    screens: {},
     input: {},
     objects: {},
     render: [],
@@ -14,103 +14,106 @@ MyGame = {
 // loaded.
 //
 //------------------------------------------------------------------
-MyGame.loader = (function() {
+MyGame.loader = (function () {
     'use strict';
     let scriptOrder = [{
-            scripts: ['input'],
-            message: 'Input loaded',
-            onComplete: null
-        }, {
-            scripts: ['graphics'],
-            message: 'Graphics model loaded',
-            onComplete: null
-        }, {
-            scripts: ['gameobjects'],
-            message: 'Game objects loaded',
-            onComplete: null
-        }, {
-            scripts: ['random'],
-            message: 'Random loaded',
-            onComplete: null
-        }, {
-            scripts: ['game'],
-            message: 'Game object loaded',
-            onComplete: null
-        }, {
-            scripts: ['mainmenu'],
-            message: 'Main Menu loaded',
-            onComplete: null
-        }, {
-            scripts: ['controls'],
-            message: 'Controls loaded',
-            onComplete: null
-        }, {
-            scripts: ['credits'],
-            message: 'Credits loaded',
-            onComplete: null
-        }, {
-            scripts: ['highscores'],
-            message: 'Highscores loaded',
-            onComplete: null
-        }, {
-            scripts: ['pause'],
-            message: 'Pause loaded',
-            onComplete: null
-        }, {
-            scripts: ['gameplay'],
-            message: 'Game loop loaded',
-            onComplete: null
-        }];
+        scripts: ['input'],
+        message: 'Input loaded',
+        onComplete: null
+    }, {
+        scripts: ['graphics'],
+        message: 'Graphics model loaded',
+        onComplete: null
+    }, {
+        scripts: ['gameobjects'],
+        message: 'Game objects loaded',
+        onComplete: null
+    }, {
+        scripts: ['random'],
+        message: 'Random loaded',
+        onComplete: null
+    }, {
+        scripts: ['game'],
+        message: 'Game object loaded',
+        onComplete: null
+    }, {
+        scripts: ['mainmenu'],
+        message: 'Main Menu loaded',
+        onComplete: null
+    }, {
+        scripts: ['controls'],
+        message: 'Controls loaded',
+        onComplete: null
+    }, {
+        scripts: ['credits'],
+        message: 'Credits loaded',
+        onComplete: null
+    }, {
+        scripts: ['highscores'],
+        message: 'Highscores loaded',
+        onComplete: null
+    }, {
+        scripts: ['pause'],
+        message: 'Pause loaded',
+        onComplete: null
+    }, {
+        scripts: ['gameplay'],
+        message: 'Game loop loaded',
+        onComplete: null
+    }];
 
     let assetOrder = [{
-            key: 'creep',
-            source: '/assets/creep-1.png'
-        }, {
-            key: 'tank',
-            source: '/assets/creep-2.png'
-        }, {
-            key: 'flyer',
-            source: '/assets/creep-3.png'
-        }, {
-            key: 'base',
-            source: '/assets/turret-base.png'
-        }, {
-            key: 'proj1',
-            source: '/assets/turret-1-1.png'
-        }, {
-            key: 'proj2',
-            source: '/assets/turret-1-2.png'
-        }, {
-            key: 'proj3',
-            source: '/assets/turret-1-3.png'
-        }, {
-            key: 'mis1',
-            source: '/assets/turret-2-1.png'
-        }, {
-            key: 'mis2',
-            source: '/assets/turret-2-2.png'
-        }, {
-            key: 'mis3',
-            source: '/assets/turret-2-3.png'
-        }, {
-            key: 'bomb1',
-            source: '/assets/turret-3-1.png'
-        }, {
-            key: 'bomb2',
-            source: '/assets/turret-3-2.png'
-        }, {
-            key: 'bomb3',
-            source: '/assets/turret-3-3.png'
-        }, {
-            key: 'flak1',
-            source: '/assets/turret-4-1.png'
-        }, {
-            key: 'flak2',
-            source: '/assets/turret-4-2.png'
-        }, {
-            key: 'flak3',
-            source: '/assets/turret-4-3.png'
-        }];
+        key: 'proj_fire',
+        source: '/audio/proj_fire.mp3'
+    }, {
+        key: 'creep',
+        source: '/assets/creep-1.png'
+    }, {
+        key: 'tank',
+        source: '/assets/creep-2.png'
+    }, {
+        key: 'flyer',
+        source: '/assets/creep-3.png'
+    }, {
+        key: 'base',
+        source: '/assets/turret-base.png'
+    }, {
+        key: 'proj1',
+        source: '/assets/turret-1-1.png'
+    }, {
+        key: 'proj2',
+        source: '/assets/turret-1-2.png'
+    }, {
+        key: 'proj3',
+        source: '/assets/turret-1-3.png'
+    }, {
+        key: 'mis1',
+        source: '/assets/turret-2-1.png'
+    }, {
+        key: 'mis2',
+        source: '/assets/turret-2-2.png'
+    }, {
+        key: 'mis3',
+        source: '/assets/turret-2-3.png'
+    }, {
+        key: 'bomb1',
+        source: '/assets/turret-3-1.png'
+    }, {
+        key: 'bomb2',
+        source: '/assets/turret-3-2.png'
+    }, {
+        key: 'bomb3',
+        source: '/assets/turret-3-3.png'
+    }, {
+        key: 'flak1',
+        source: '/assets/turret-4-1.png'
+    }, {
+        key: 'flak2',
+        source: '/assets/turret-4-2.png'
+    }, {
+        key: 'flak3',
+        source: '/assets/turret-4-3.png'
+    }];
 
     //------------------------------------------------------------------
     //
@@ -129,7 +132,7 @@ MyGame.loader = (function() {
         // When we run out of things to load, that is when we call onComplete.
         if (scripts.length > 0) {
             let entry = scripts[0];
-            require(entry.scripts, function() {
+            require(entry.scripts, function () {
                 console.log(entry.message);
                 if (entry.onComplete) {
                     entry.onComplete();
@@ -163,12 +166,12 @@ MyGame.loader = (function() {
         if (assets.length > 0) {
             let entry = assets[0];
             loadAsset(entry.source,
-                function(asset) {
+                function (asset) {
                     onSuccess(entry, asset);
                     assets.shift();    // Alternatively: assets.splice(0, 1);
                     loadAssets(assets, onSuccess, onError, onComplete);
                 },
-                function(error) {
+                function (error) {
                     onError(error);
                     assets.shift();    // Alternatively: assets.splice(0, 1);
                     loadAssets(assets, onSuccess, onError, onComplete);
@@ -193,7 +196,7 @@ MyGame.loader = (function() {
             xhr.open('GET', source, true);
             xhr.responseType = 'blob';
 
-            xhr.onload = function() {
+            xhr.onload = function () {
                 let asset = null;
                 if (xhr.status === 200) {
                     if (fileExtension === 'png' || fileExtension === 'jpg') {
@@ -203,7 +206,7 @@ MyGame.loader = (function() {
                     } else {
                         if (onError) { onError('Unknown file extension: ' + fileExtension); }
                     }
-                    asset.onload = function() {
+                    asset.onload = function () {
                         window.URL.revokeObjectURL(asset.src);
                     };
                     asset.src = window.URL.createObjectURL(xhr.response);
@@ -233,13 +236,13 @@ MyGame.loader = (function() {
     // Start with loading the assets, then the scripts.
     console.log('Starting to dynamically load project assets');
     loadAssets(assetOrder,
-        function(source, asset) {    // Store it on success
+        function (source, asset) {    // Store it on success
             MyGame.assets[source.key] = asset;
         },
-        function(error) {
+        function (error) {
             console.log(error);
         },
-        function() {
+        function () {
             console.log('All game assets loaded');
             console.log('Starting to dynamically load project scripts');
             loadScripts(scriptOrder, mainComplete);

@@ -445,6 +445,7 @@ MyGame.objects = (function (graphics, assets) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 10;
             spec.bullets.push(bullet(bulletSpec));
+            assets['proj_fire'].play();
         };
         spec.fireCooldown = 1000;
 
@@ -512,6 +513,8 @@ MyGame.objects = (function (graphics, assets) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 1.5;
             spec.bullets.push(bullet(bulletSpec));
+            spec.bullets.push(bullet(bulletSpec));
+            assets['proj_fire'].play();
         };
         spec.fireCooldown = 200;
 

@@ -166,7 +166,7 @@ MyGame.graphics = (function () {
         }
 
         that.changeSprite = function (newSprite) {
-            image.src = newSprite;
+            spec.sprite = newSprite;
         }
 
         that.changeRotation = function (newRotation) {
