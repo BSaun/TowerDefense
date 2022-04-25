@@ -1,5 +1,5 @@
 
-MyGame.objects = (function (graphics) {
+MyGame.objects = (function (graphics, assets) {
     'use strict';
 
     //------------------------------------------------------------------
@@ -171,7 +171,7 @@ MyGame.objects = (function (graphics) {
     }
 
     function baseCreep(spec) {
-        spec.sprite = 'assets/creep-1.png';
+        spec.sprite = assets['creep'];
         spec.score = 10;
         spec.intervalArray = [250, 250, 250, 250];
         spec.moveSpeed = graphics.CELL_WIDTH / 1500;
@@ -182,7 +182,7 @@ MyGame.objects = (function (graphics) {
     }
 
     function tankCreep(spec) {
-        spec.sprite = 'assets/creep-2.png';
+        spec.sprite = assets['tank'];
         spec.score = 10;
         spec.intervalArray = [250, 250, 250, 250];
         spec.moveSpeed = graphics.CELL_WIDTH / 2500;
@@ -193,7 +193,7 @@ MyGame.objects = (function (graphics) {
     }
 
     function flyCreep(spec) {
-        spec.sprite = 'assets/creep-3.png';
+        spec.sprite = assets['flyer'];
         spec.score = 10;
         spec.intervalArray = [250, 250, 250, 250, 250, 250];
         spec.moveSpeed = graphics.CELL_WIDTH / 2000;
@@ -266,7 +266,7 @@ MyGame.objects = (function (graphics) {
             rotation: 0
         });
         let baseSprite = graphics.Sprite({
-            sprite: 'assets/turret-base.gif',
+            sprite: assets['base'],
             size: spec.size,
             center: spec.center,
             rotation: 0
@@ -413,7 +413,7 @@ MyGame.objects = (function (graphics) {
         let that = {};
 
         let baseSprite = graphics.Sprite({
-            sprite: 'assets/turret-base.gif',
+            sprite: assets['base'],
             size: spec.size,
             center: spec.center,
             rotation: 0
@@ -431,7 +431,7 @@ MyGame.objects = (function (graphics) {
     };
 
     function simpleTower(spec) {
-        spec.weaponSprites = ['assets/turret-1-1.png', 'assets/turret-1-2.png', 'assets/turret-1-3.png'];
+        spec.weaponSprites = [assets['proj1'], assets['proj2'], assets['proj3']];
         spec.range = 150;
         spec.type = 1;
         spec.score = 25;
@@ -453,7 +453,7 @@ MyGame.objects = (function (graphics) {
     }
 
     function bombTower(spec) {
-        spec.weaponSprites = ['assets/turret-3-1.png', 'assets/turret-3-2.png', 'assets/turret-3-3.png'];
+        spec.weaponSprites = [assets['bomb1'], assets['bomb2'], assets['bomb3']];
         spec.range = 250;
         spec.type = 2;
         spec.score = 50;
@@ -475,7 +475,7 @@ MyGame.objects = (function (graphics) {
     }
 
     function missileTower(spec) {
-        spec.weaponSprites = ['assets/turret-2-1.png', 'assets/turret-2-2.png', 'assets/turret-2-3.png'];
+        spec.weaponSprites = [assets['mis1'], assets['mis2'], assets['mis3']];
         spec.range = 200;
         spec.type = 3;
         spec.score = 50;
@@ -498,7 +498,7 @@ MyGame.objects = (function (graphics) {
 
 
     function flakTower(spec) {
-        spec.weaponSprites = ['assets/turret-4-1.png', 'assets/turret-4-2.png', 'assets/turret-4-3.png'];
+        spec.weaponSprites = [assets['flak1'], assets['flak2'], assets['flak3']];
         spec.range = 100;
         spec.type = 4;
         spec.score = 100;
@@ -527,7 +527,7 @@ MyGame.objects = (function (graphics) {
         that.ground = spec.ground;
 
         let bulletSprite = graphics.Sprite({
-            sprite: 'assets/turret-1-1.png',
+            sprite: assets['proj1'],
             center: spec.center,
             size: { width: spec.size.width / 3, height: spec.size.height / 3 },
             rotation: spec.rotation
@@ -562,7 +562,7 @@ MyGame.objects = (function (graphics) {
         that.ground = spec.ground;
 
         let bulletSprite = graphics.Sprite({
-            sprite: 'assets/turret-2-1.png',
+            sprite: assets['mis1'],
             center: spec.center,
             size: { width: spec.size.width / 3, height: spec.size.height / 3 },
             rotation: spec.rotation
@@ -598,7 +598,7 @@ MyGame.objects = (function (graphics) {
         that.ground = spec.ground;
 
         let bulletSprite = graphics.Sprite({
-            sprite: 'assets/turret-3-1.png',
+            sprite: assets['proj1'],
             center: spec.center,
             size: { width: spec.size.width / 3, height: spec.size.height / 3 },
             rotation: spec.rotation
@@ -648,4 +648,4 @@ MyGame.objects = (function (graphics) {
         flakTower: flakTower
     };
 
-}(MyGame.graphics));
+}(MyGame.graphics, MyGame.assets));
