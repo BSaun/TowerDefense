@@ -8,8 +8,11 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
 
     let lastTimeStamp = performance.now();
     let cancelNextRequest = true;
+    let LEFT_CELL = {};
+    let RIGHT_CELL = {};
+    let UP_CELL = {};
+    let DOWN_CELL = {};
 
-    let playing = true;
     let towerType = 1
     let level = 1;
     let creepCounts = [5, 10, 3]
@@ -22,28 +25,28 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         font: '24pt Times New Roman',
         fillStyle: 'rgba(255, 255, 255, 1)',
         strokeStyle: 'rgba(0, 0, 0, 1)',
-        position: {x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5}
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 }
     });
     let myHealth = objects.Text({
         text: 'Life: ' + playerHealth.toString(),
         font: '24pt Times New Roman',
         fillStyle: 'rgba(255, 255, 255, 1)',
         strokeStyle: 'rgba(0, 0, 0, 1)',
-        position: {x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 2}
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 2 }
     });
     let myMoney = objects.Text({
         text: 'Money: ' + money.toString(),
         font: '24pt Times New Roman',
         fillStyle: 'rgba(255, 255, 255, 1)',
         strokeStyle: 'rgba(0, 0, 0, 1)',
-        position: {x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 3}
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 3 }
     });
     let myLevel = objects.Text({
         text: 'Level: ' + level.toString(),
         font: '24pt Times New Roman',
         fillStyle: 'rgba(255, 255, 255, 1)',
         strokeStyle: 'rgba(0, 0, 0, 1)',
-        position: {x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 4}
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 4 }
     });
 
     let MAZE_SIZE = 15;
@@ -52,7 +55,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
     let placingTower = false;
     let selectingTower = false;
 
-    
+
     let maze = [];
     let startCell = {};
     let lastCell = {};
@@ -294,43 +297,50 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
                 }));
             }
         }
-    
-        startCell = maze[0][7]
-        lastCell = maze[14][7]
+
+        LEFT_CELL = maze[0][7];
+        RIGHT_CELL = maze[14][7];
+        UP_CELL = maze[7][0];
+        DOWN_CELL = maze[7][14];
+        let entryPoints = [LEFT_CELL, RIGHT_CELL, UP_CELL, DOWN_CELL];
+
+        startCell = UP_CELL;
+        lastCell = RIGHT_CELL;
         for (let i = 0; i < MAZE_SIZE; i++) {
             let wall = {};
-            if (maze[i][0] != startCell && maze[i][0] != lastCell) {
+            if (!entryPoints.includes(maze[i][0])) {
                 wall = formWall(i, 0);
                 walls.push(wall);
                 maze[i][0].setTower();
             }
-            if (maze[0][i] != startCell && maze[0][i] != lastCell) {
+            if (!entryPoints.includes(maze[0][i])) {
                 wall = formWall(0, i);
                 walls.push(wall);
                 maze[0][i].setTower();
             }
-            if (maze[MAZE_SIZE - 1][i] != startCell && maze[MAZE_SIZE - 1][i] != lastCell) {
+            if (!entryPoints.includes(maze[MAZE_SIZE - 1][i])) {
                 wall = formWall(MAZE_SIZE - 1, i);
                 walls.push(wall);
                 maze[MAZE_SIZE - 1][i].setTower();
             }
-            if (maze[i][MAZE_SIZE - 1] != startCell && maze[i][MAZE_SIZE - 1] != lastCell) {
+            if (!entryPoints.includes(maze[i][MAZE_SIZE - 1])) {
                 wall = formWall(i, MAZE_SIZE - 1);
                 walls.push(wall);
                 maze[i][MAZE_SIZE - 1].setTower();
             }
         }
-    
-        startCell.removeTower();
-        lastCell.removeTower();
-    
+
+        LEFT_CELL.removeTower();
+        RIGHT_CELL.removeTower();
+        UP_CELL.removeTower();
+        DOWN_CELL.removeTower();
+
         shortestPath = findShortestPath(startCell, lastCell)
         formPath();
 
         if (localStorage.getItem('MyGame.highscores') === null) {
             localStorage['MyGame.highscores'] = JSON.stringify([0, 0, 0, 0, 0])
         }
-        playing = true;
         if (localStorage.getItem('MyGame.controls') === null) {
             myKeyboard.registerCommand(83, upgrade);
             myKeyboard.registerCommand(85, sell);
@@ -488,7 +498,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
             if (!hasTower(indexX, indexY)) {
                 maze[indexX][indexY].setTower();
                 shortestPath = findShortestPath(startCell, lastCell);
-                if (shortestPath != undefined) { 
+                if (shortestPath != undefined) {
                     let tower = formTower(indexX, indexY, towerType, false);
                     towers.push(tower);
                     score += tower.score;
@@ -599,8 +609,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         towers = [];
         bullets = [];
         creeps = [];
+        selected = {};
         initialize();
-        game.showScreen('main-menu'); 
+        game.showScreen('main-menu');
     }
 
     return {

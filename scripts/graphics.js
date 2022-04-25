@@ -3,12 +3,12 @@
 // This is the graphics rendering code for the game.
 //
 // ------------------------------------------------------------------
-MyGame.graphics = (function (size) {
+MyGame.graphics = (function () {
     'use strict';
 
     let canvas = document.getElementById('id-canvas');
     let context = canvas.getContext('2d');
-    let MAZE_SIZE = size;
+    let MAZE_SIZE = 15;
     let CELL_WIDTH = canvas.width / MAZE_SIZE * 2 / 3;
     let CELL_HEIGHT = canvas.height / MAZE_SIZE * 2 / 3;
 
@@ -255,4 +255,4 @@ MyGame.graphics = (function (size) {
         get SHOP_END() { return SHOP_END },
         get HUD_BEGIN() { return HUD_BEGIN }
     };
-}(15));
+}());
