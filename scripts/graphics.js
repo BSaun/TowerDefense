@@ -137,38 +137,25 @@ MyGame.graphics = (function (size) {
     //------------------------------------------------------------------
     function Sprite(spec) {
         let that = {};
-        let image = new Image();
 
-        //
-        // Load the image, set the ready flag once it is loaded so that
-        // rendering can begin.
-        image.onload = function () {
+        that.draw = function () {
+            context.save();
+
+            context.translate(spec.center.x, spec.center.y);
+            context.rotate(spec.rotation);
+            context.translate(-spec.center.x, -spec.center.y);
+
             //
-            // Our clever trick, replace the draw function once the image is loaded...no if statements!
-            that.draw = function () {
-                context.save();
+            // Pick the selected sprite from the sprite sheet to render
+            context.drawImage(
+                spec.sprite,
+                spec.center.x - spec.size.width / 2,
+                spec.center.y - spec.size.height / 2,
+                spec.size.width, spec.size.height);
 
-                context.translate(spec.center.x, spec.center.y);
-                context.rotate(spec.rotation);
-                context.translate(-spec.center.x, -spec.center.y);
-
-                //
-                // Pick the selected sprite from the sprite sheet to render
-                context.drawImage(
-                    image,
-                    spec.center.x - spec.size.width / 2,
-                    spec.center.y - spec.size.height / 2,
-                    spec.size.width, spec.size.height);
-
-                context.restore();
-            };
-            //
-            // Once the image is loaded, we can compute the height and width based upon
-            // what we know of the image and the number of sprites in the sheet.
-            spec.height = image.height;
-            spec.width = image.width / spec.spriteCount;
-        };
-        image.src = spec.sprite;
+            context.restore();
+        }
+        
 
         that.rotateRight = function (angle) {
             spec.rotation += angle;
@@ -185,16 +172,6 @@ MyGame.graphics = (function (size) {
         that.changeRotation = function (newRotation) {
             spec.rotation = newRotation;
         }
-
-        //------------------------------------------------------------------
-        //
-        // Render the correct sprite from the sprite sheet
-        //
-        //------------------------------------------------------------------
-        that.draw = function () {
-            //
-            // Starts out empty, but gets replaced once the image is loaded!
-        };
 
         //
         // The other side of that hack job
@@ -215,38 +192,30 @@ MyGame.graphics = (function (size) {
     //------------------------------------------------------------------
     function AnimatedSprite(spec) {
         let that = {};
-        let image = new Image();
         let animationTime = 0;
         let subImageIndex = 0;
         let spriteCount = spec.intervals.length;
-
         //
-        // Load the image, set the ready flag once it is loaded so that
-        // rendering can begin.
-        image.onload = function () {
+        // Our clever trick, replace the draw function once the image is loaded...no if statements!
+        that.draw = function () {
+            context.save();
+
+            context.translate(spec.center.x, spec.center.y);
+            context.rotate(spec.rotation);
+            context.translate(-spec.center.x, -spec.center.y);
+
             //
-            // Our clever trick, replace the draw function once the image is loaded...no if statements!
-            that.draw = function () {
-                context.save();
+            // Pick the selected sprite from the sprite sheet to render
+            context.drawImage(
+                spec.sprite,
+                subImageIndex * (spec.sprite.width / spriteCount), 0,      // Which sub-texture to pick out
+                spec.sprite.width / spriteCount, spec.sprite.height,   // The size of the sub-texture
+                spec.center.x - spec.size.width / 2,
+                spec.center.y - spec.size.height / 2,
+                spec.size.width, spec.size.height);
 
-                context.translate(spec.center.x, spec.center.y);
-                context.rotate(spec.rotation);
-                context.translate(-spec.center.x, -spec.center.y);
-
-                //
-                // Pick the selected sprite from the sprite sheet to render
-                context.drawImage(
-                    image,
-                    subImageIndex * (image.width / spriteCount), 0,      // Which sub-texture to pick out
-                    image.width / spriteCount, image.height,   // The size of the sub-texture
-                    spec.center.x - spec.size.width / 2,
-                    spec.center.y - spec.size.height / 2,
-                    spec.size.width, spec.size.height);
-
-                context.restore();
-            };
+            context.restore();
         };
-        image.src = spec.sprite;
 
         that.update = function(elapsedTime) {
             animationTime += elapsedTime;
@@ -267,16 +236,6 @@ MyGame.graphics = (function (size) {
         that.changeRotation = function (newRotation) {
             spec.rotation = newRotation;
         }
-
-        //------------------------------------------------------------------
-        //
-        // Render the correct sprite from the sprite sheet
-        //
-        //------------------------------------------------------------------
-        that.draw = function () {
-            //
-            // Starts out empty, but gets replaced once the image is loaded!
-        };
 
         return that;
     }
