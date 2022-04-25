@@ -18,47 +18,47 @@ MyGame.loader = (function() {
     'use strict';
     let scriptOrder = [{
             scripts: ['input'],
-            message: 'Random number generator loaded',
+            message: 'Input loaded',
             onComplete: null
         }, {
             scripts: ['graphics'],
-            message: 'Particle system model loaded',
+            message: 'Graphics model loaded',
             onComplete: null
         }, {
             scripts: ['gameobjects'],
-            message: 'Rendering core loaded',
+            message: 'Game objects loaded',
             onComplete: null
         }, {
             scripts: ['random'],
-            message: 'Particle system renderer loaded',
+            message: 'Random loaded',
             onComplete: null
         }, {
             scripts: ['game'],
-            message: 'Particle system renderer loaded',
+            message: 'Game object loaded',
             onComplete: null
         }, {
             scripts: ['mainmenu'],
-            message: 'Particle system renderer loaded',
+            message: 'Main Menu loaded',
             onComplete: null
         }, {
             scripts: ['controls'],
-            message: 'Particle system renderer loaded',
+            message: 'Controls loaded',
             onComplete: null
         }, {
             scripts: ['credits'],
-            message: 'Particle system renderer loaded',
+            message: 'Credits loaded',
             onComplete: null
         }, {
             scripts: ['highscores'],
-            message: 'Particle system renderer loaded',
+            message: 'Highscores loaded',
             onComplete: null
         }, {
             scripts: ['pause'],
-            message: 'Particle system renderer loaded',
+            message: 'Pause loaded',
             onComplete: null
         }, {
             scripts: ['gameplay'],
-            message: 'Game loop and model loaded',
+            message: 'Game loop loaded',
             onComplete: null
         }];
 
