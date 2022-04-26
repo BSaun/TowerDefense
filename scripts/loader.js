@@ -3,8 +3,11 @@ MyGame = {
     input: {},
     objects: {},
     render: [],
+    systems: {},
     controls: {},
-    assets: {}
+    assets: {},
+    sounds: {},
+    player: {}
 };
 //------------------------------------------------------------------
 //
@@ -25,8 +28,16 @@ MyGame.loader = (function () {
         message: 'Graphics model loaded',
         onComplete: null
     }, {
+        scripts: ['player'],
+        message: 'Sound player loaded',
+        onComplete: null
+    }, {
         scripts: ['gameobjects'],
         message: 'Game objects loaded',
+        onComplete: null
+    }, {
+        scripts: ['particle-system'],
+        message: 'Particle systems loaded',
         onComplete: null
     }, {
         scripts: ['random'],
@@ -65,6 +76,12 @@ MyGame.loader = (function () {
     let assetOrder = [{
         key: 'proj_fire',
         source: '/audio/proj_fire.mp3'
+    }, {
+        key: 'smoke',
+        source: '/assets/smoke.png'
+    }, {
+        key: 'fireworks',
+        source: '/assets/fireworks.png'
     }, {
         key: 'creep',
         source: '/assets/creep-1.png'

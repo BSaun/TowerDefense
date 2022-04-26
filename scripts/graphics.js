@@ -42,6 +42,27 @@ MyGame.graphics = (function () {
 
     //------------------------------------------------------------------
     //
+    // Public function that draws a texture to the canvas
+    //
+    //------------------------------------------------------------------
+    function drawTexture(image, center, rotation, size) {
+        context.save();
+
+        context.translate(center.x, center.y);
+        context.rotate(rotation);
+        context.translate(-center.x, -center.y);
+
+        context.drawImage(
+            image,
+            center.x - size.x / 2,
+            center.y - size.y / 2,
+            size.x, size.y);
+
+        context.restore();
+    }
+
+    //------------------------------------------------------------------
+    //
     // Draws the grid for the arena.
     //
     //------------------------------------------------------------------
@@ -76,6 +97,13 @@ MyGame.graphics = (function () {
         context.strokeRect(rect.center.x - rect.size.x / 2, rect.center.y - rect.size.y / 2, rect.size.x, rect.size.y);
 
         context.restore();
+    }
+
+    function renderParticles(system) {
+        Object.getOwnPropertyNames(system.particles).forEach( function(value) {
+            let particle = system.particles[value];
+            drawTexture(system.image, particle.center, particle.rotation, particle.size);
+        });
     }
 
     //------------------------------------------------------------------
@@ -248,6 +276,7 @@ MyGame.graphics = (function () {
         drawText: drawText,
         drawHealthbar: drawHealthbar,
         AnimatedSprite: AnimatedSprite,
+        renderParticles: renderParticles,
         get CELL_HEIGHT() { return CELL_HEIGHT },
         get CELL_WIDTH() { return CELL_WIDTH },
         get CANVAS_HEIGHT() { return canvas.height },

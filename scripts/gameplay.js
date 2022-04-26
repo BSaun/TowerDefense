@@ -3,7 +3,7 @@
 // This function provides the "game" code.
 //
 //------------------------------------------------------------------
-MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
+MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems, assets, soundPlayer) {
     'use strict';
 
     let lastTimeStamp = performance.now();
@@ -13,7 +13,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
     let UP_CELL = {};
     let DOWN_CELL = {};
 
-    let towerType = 1
+    let towerType = 1;
     let level = 1;
     let creepCounts = [5, 10, 3]
     let levelCooldown = 0;
@@ -48,6 +48,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         strokeStyle: 'rgba(0, 0, 0, 1)',
         position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 4 }
     });
+
+    let particlesList = [];
 
     let MAZE_SIZE = 15;
 
@@ -184,6 +186,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
     //
     //------------------------------------------------------------------
     function update(elapsedTime) {
+        for (let i = 0; i < particlesList.length; i++) {
+            particlesList[i].update(elapsedTime);
+        }
         for (let i = 0; i < towers.length; i++) {
             towers[i].update(elapsedTime);
             if (!towers[i].active) {
@@ -198,7 +203,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
                     creeps.splice(i, 1);
                 }
                 else {
-                    let reward = creeps.splice(i, 1)[0].score
+                    particlesList.push(createSmokeParticles(creeps[i]));
+                    let reward = creeps.splice(i, 1)[0].score;
                     score += reward;
                     money += reward;
                 }
@@ -267,6 +273,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         myMoney.render();
         myLevel.updateText('Level: ' + level.toString());
         myLevel.render();
+        for (let i = 0; i < particlesList.length; i++) {
+            graphics.renderParticles(particlesList[i]);
+        }
     }
 
     //------------------------------------------------------------------
@@ -507,6 +516,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
                     formPath();
                     placingTower = false;
                     selectingTower = true;
+                    particlesList.push(createFireworkParticles(tower));
                 }
                 else {
                     maze[indexX][indexY].removeTower();
@@ -539,6 +549,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
     function sell() {
         if (!isEmpty(selected)) {
             selected.sell();
+            particlesList.push(createSmokeParticles(selected));
             maze[selected.coords.x][selected.coords.y].removeTower();
             money += selected.refundCost;
             selected = {};
@@ -595,6 +606,28 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         return true;
     }
 
+    function createSmokeParticles(spec) {
+        return systems.ParticleSystem({
+            center: { x: spec.center.x, y: spec.center.y },
+            size: { mean: 5, stdev: 4 },
+            speed: { mean: 25, stdev: 5 },
+            lifetime: { mean: .25, stdev: .05 },
+            systemLifetime: .5,
+            image: assets['smoke']
+        });
+    }
+
+    function createFireworkParticles(spec) {
+        return systems.ParticleSystem({
+            center: { x: spec.center.x, y: spec.center.y },
+            size: { mean: 5, stdev: 4 },
+            speed: { mean: 80, stdev: 5 },
+            lifetime: { mean: .25, stdev: .05 },
+            systemLifetime: .5,
+            image: assets['fireworks']
+        });
+    }
+
     function quit() {
         if (score != 0) {
             let scores = JSON.parse(localStorage.getItem('MyGame.highscores'));
@@ -620,4 +653,4 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input) {
         quit: quit
     }
 
-}(MyGame.game, MyGame.objects, MyGame.graphics, MyGame.input));
+}(MyGame.game, MyGame.objects, MyGame.graphics, MyGame.input, MyGame.systems, MyGame.assets, MyGame.player));

@@ -1,5 +1,5 @@
 
-MyGame.objects = (function (graphics, assets) {
+MyGame.objects = (function (graphics, assets, soundPlayer) {
     'use strict';
 
     //------------------------------------------------------------------
@@ -249,6 +249,7 @@ MyGame.objects = (function (graphics, assets) {
         that.score = spec.score;
         that.placeCost = spec.placeCost;
         that.refundCost = Math.floor(spec.placeCost * .75);
+        that.center = spec.center;
 
         let costText = Text({
             text: spec.costText,
@@ -514,7 +515,7 @@ MyGame.objects = (function (graphics, assets) {
             bulletSpec.damage = 1.5;
             spec.bullets.push(bullet(bulletSpec));
             spec.bullets.push(bullet(bulletSpec));
-            assets['proj_fire'].play();
+            soundPlayer.playSound('proj_fire', false);
         };
         spec.fireCooldown = 200;
 
@@ -651,4 +652,4 @@ MyGame.objects = (function (graphics, assets) {
         flakTower: flakTower
     };
 
-}(MyGame.graphics, MyGame.assets));
+}(MyGame.graphics, MyGame.assets, MyGame.player));
