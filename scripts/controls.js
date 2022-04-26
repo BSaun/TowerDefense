@@ -25,6 +25,13 @@ MyGame.screens['controls'] = (function(game) {
                 document.getElementById('id-controls-next-level').innerHTML = 'PRESS NEW KEY';
                 }
             );
+        document.getElementById('id-controls-music-toggle').addEventListener(
+            'click',
+            function() { 
+                window.addEventListener("keydown", toggleMusic);
+                document.getElementById('id-controls-music-toggle').innerHTML = 'PRESS NEW KEY';
+                }
+            );
         document.getElementById('id-controls-back').addEventListener(
             'click',
             function() { 
@@ -52,6 +59,13 @@ MyGame.screens['controls'] = (function(game) {
         document.getElementById('id-controls-next-level').innerHTML = 'Next Level: ' + e.key;
         controls[2] = e.keyCode;
         localStorage['MyGame.controls'] = JSON.stringify(controls);   
+    }
+
+    function toggleMusic(e) {
+        window.removeEventListener("keydown", nextLevel);    
+        document.getElementById('id-controls-music-toggle').innerHTML = 'Music Toggle: ' + e.key;
+        controls[3] = e.keyCode;
+        localStorage['MyGame.controls'] = JSON.stringify(controls); 
     }
 
     function run() {

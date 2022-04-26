@@ -14,6 +14,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let DOWN_CELL = {};
     let vertical = false;
     let playing = true;
+    let soundMuted = false;
     let endCountdown = 5000;
 
     let towerType = 1;
@@ -22,6 +23,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let levelCooldown = 0;
     let score = 0;
     let playerHealth = 20;
+    let musicCooldown = 1500;
     let money = 1000;
     let myScore = objects.Text({
         text: 'Score: ' + score.toString(),
@@ -232,7 +234,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                         creeps.splice(i, 1);
                     }
                     else {
-                        particlesList.push(createSmokeParticles(creeps[i]));
+                        particlesList.push(systems.creepDeath(creeps[i]));
                         floatingScores.push(createFloatingScore(creeps[i]));
                         let reward = creeps.splice(i, 1)[0].score;
                         score += reward;
@@ -252,7 +254,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                         else if (canHit) {
                             creeps[j].currentHealth -= bullets[i].damage;
                             bullets[i].active = false;
-                            particlesList.push(createExplosionParticles(bullets[i]))
+                            particlesList.push(systems.bombExplosion(bullets[i]))
                             for (let k = 0; k < creeps.length; k++) {
                                 if (inExplosiveRange(bullets[i], creeps[k])) {
                                     creeps[k].currentHealth -= bullets[i].damage;
@@ -267,6 +269,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             }
             if (levelCooldown > 0) {
                 levelCooldown -= elapsedTime;
+            }
+            if (musicCooldown > 0) {
+                musicCooldown -= elapsedTime;
             }
             if (playerHealth <= 0) {
                 playing = false;
@@ -405,7 +410,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             localStorage['MyGame.highscores'] = JSON.stringify([0, 0, 0, 0, 0])
         }
         if (localStorage.getItem('MyGame.controls') === null) {
-            localStorage['MyGame.controls'] = JSON.stringify([85, 83, 71]);
+            localStorage['MyGame.controls'] = JSON.stringify([85, 83, 71, 77]);
         }
 
         //
@@ -552,7 +557,6 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                     formPath();
                     placingTower = false;
                     selectingTower = true;
-                    particlesList.push(createFireworkParticles(tower));
                 }
                 else {
                     maze[indexX][indexY].removeTower();
@@ -569,6 +573,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         myKeyboard.registerCommand(controls[0], upgrade);
         myKeyboard.registerCommand(controls[1], sell);
         myKeyboard.registerCommand(controls[2], nextLevel);
+        myKeyboard.registerCommand(controls[3], toggleMusic);
 
         myKeyboard.registerCommand(27, function () {
             //
@@ -606,7 +611,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     function sell() {
         if (!isEmpty(selected)) {
             selected.sell();
-            particlesList.push(createSmokeParticles(selected));
+            particlesList.push(systems.sellTower(selected));
             maze[selected.coords.x][selected.coords.y].removeTower();
             money += selected.refundCost;
             selected = {};
@@ -673,6 +678,19 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         }
     }
 
+    function toggleMusic() {
+        if (musicCooldown <= 0) {
+            if (soundMuted) {
+                soundPlayer.playSound('music', true);
+                soundMuted = false;
+            }
+            else {
+                soundPlayer.pauseSound('music', true);
+                soundMuted = true;
+            }
+            musicCooldown = 1500;
+        }
+    }
 
     function intersectBullets(r1, r2) {
         return !(
@@ -688,42 +706,6 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             return false;
         }
         return true;
-    }
-
-    function createSmokeParticles(spec) {
-        return systems.ParticleSystem({
-            center: { x: spec.center.x, y: spec.center.y },
-            size: { mean: 5, stdev: 4 },
-            speed: { mean: 25, stdev: 5 },
-            lifetime: { mean: .25, stdev: .05 },
-            systemLifetime: .5,
-            density: 1,
-            image: assets['smoke']
-        });
-    }
-
-    function createFireworkParticles(spec) {
-        return systems.ParticleSystem({
-            center: { x: spec.center.x, y: spec.center.y },
-            size: { mean: 5, stdev: 4 },
-            speed: { mean: 80, stdev: 5 },
-            lifetime: { mean: .25, stdev: .05 },
-            systemLifetime: .5,
-            density: 1,
-            image: assets['fireworks']
-        });
-    }
-
-    function createExplosionParticles(spec) {
-        return systems.ParticleSystem({
-            center: { x: spec.center.x, y: spec.center.y },
-            size: { mean: 7, stdev: 2 },
-            speed: { mean: 200, stdev: 5 },
-            lifetime: { mean: .15, stdev: .05 },
-            systemLifetime: .25,
-            density: 3,
-            image: assets['fire']
-        });
     }
 
     function createFloatingScore(spec) {
