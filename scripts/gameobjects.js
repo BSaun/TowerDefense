@@ -114,7 +114,7 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             if (moveTime > 0) {
                 moveTime -= elapsedTime;
             }
-            if (spec.center.x > graphics.SHOP_BEGIN || spec.center.y < 0) {
+            if (spec.center.x > graphics.SHOP_BEGIN || spec.center.y > graphics.HUD_BEGIN) {
                 that.escaped = true;
                 that.active = false;
             }
@@ -125,7 +125,13 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             let indexX = parseInt(spec.center.x / graphics.CELL_WIDTH);
             let indexY = parseInt(spec.center.y / graphics.CELL_HEIGHT);
             if (indexX > 0 && indexX < 14 && indexY > 0 && indexY < 14) {
-                let nextDirection = spec.maze[indexX][indexY].direction;
+                let nextDirection = {};
+                if (spec.vertical == true) {
+                    nextDirection = spec.maze[indexX][indexY].directionV;
+                }
+                else {
+                    nextDirection = spec.maze[indexX][indexY].directionH;
+                } 
                 if (nextDirection == currentDirection || (moveTime > 0 && protectedMove)) {
                     return;
                 }
@@ -138,26 +144,31 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
                     currentDirection = nextDirection;
                     protectedMove = false;
 
-                    switch (currentDirection.x) {
-                        case -1:
-                            spec.rotation = Math.PI;
-                            break;
-                        case 1:
-                            spec.rotation = 0;
-                            break;
-                        default:
-                            switch (currentDirection.y) {
-                                case -1:
-                                    spec.rotation = Math.PI * (3 / 2);
+                    getRotation();
 
-                                    break;
-                                case 1:
-                                    spec.rotation = Math.PI / 2;
-                                    break;
-                            }
-                    }
                     creepSprite.changeRotation(spec.rotation);
                 }
+            }
+        }
+
+        function getRotation() {
+            switch (currentDirection.x) {
+                case -1:
+                    spec.rotation = Math.PI;
+                    break;
+                case 1:
+                    spec.rotation = 0;
+                    break;
+                default:
+                    switch (currentDirection.y) {
+                        case -1:
+                            spec.rotation = Math.PI * (3 / 2);
+
+                            break;
+                        case 1:
+                            spec.rotation = Math.PI / 2;
+                            break;
+                    }
             }
         }
 
@@ -215,15 +226,21 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
         that.tower = false;
         that.towerReference = null;
         that.parent = null;
-        that.direction = { x: 1, y: 0 };
+        that.directionH = { x: 1, y: 0 };
+        that.directionV = { x: 0, y: 1 };
         that.x = spec.coords.x;
         that.y = spec.coords.y;
         that.gCost = 0;
         that.hCost = 0;
         that.fCost = spec.gCost + spec.hCost;
 
-        that.setDirection = function (nextCell) {
-            that.direction = { x: nextCell.x - that.x, y: nextCell.y - that.y }
+        that.setDirection = function (nextCell, vertical) {
+            if (vertical) {
+                that.directionV = { x: nextCell.x - that.x, y: nextCell.y - that.y }
+            }
+            else {
+                that.directionH = { x: nextCell.x - that.x, y: nextCell.y - that.y }
+            }
         };
 
         that.setTower = function () {

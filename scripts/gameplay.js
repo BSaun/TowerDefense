@@ -12,10 +12,11 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let RIGHT_CELL = {};
     let UP_CELL = {};
     let DOWN_CELL = {};
+    let vertical = false;
 
     let towerType = 1;
     let level = 1;
-    let creepCounts = [5, 10, 3]
+    let creepCounts = [3, 5, 2]
     let levelCooldown = 0;
     let score = 0;
     let playerHealth = 30;
@@ -61,7 +62,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let maze = [];
     let startCell = {};
     let lastCell = {};
-    let shortestPath = [];
+    let shortestPathH = [];
+    let shortestPathV = [];
 
     let myKeyboard = {};
     let myMouse = input.Mouse();
@@ -154,8 +156,11 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     }
 
     function formPath() {
-        for (let i = 0; i < shortestPath.length - 1; i++) {
-            shortestPath[i].setDirection(shortestPath[i + 1])
+        for (let i = 0; i < shortestPathH.length - 1; i++) {
+            shortestPathH[i].setDirection(shortestPathH[i + 1], false)
+        }
+        for (let i = 0; i < shortestPathV.length - 1; i++) {
+            shortestPathV[i].setDirection(shortestPathV[i + 1], true)
         }
     }
 
@@ -323,6 +328,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         RIGHT_CELL = maze[14][7];
         UP_CELL = maze[7][0];
         DOWN_CELL = maze[7][14];
+        UP_CELL.direction = {x: 0, y: 1}
+        DOWN_CELL.direction = {x: 0, y: 1}
         let entryPoints = [LEFT_CELL, RIGHT_CELL, UP_CELL, DOWN_CELL];
 
         startCell = LEFT_CELL;
@@ -356,7 +363,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         UP_CELL.removeTower();
         DOWN_CELL.removeTower();
 
-        shortestPath = findShortestPath(startCell, lastCell)
+        shortestPathH = findShortestPath(LEFT_CELL, RIGHT_CELL);
+        shortestPathV = findShortestPath(UP_CELL, DOWN_CELL);
         formPath();
 
         if (localStorage.getItem('MyGame.highscores') === null) {
@@ -499,8 +507,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         if (indexX > 0 && indexX < MAZE_SIZE - 1 && indexY > 0 && indexY < MAZE_SIZE - 1) {
             if (!hasTower(indexX, indexY)) {
                 maze[indexX][indexY].setTower();
-                shortestPath = findShortestPath(startCell, lastCell);
-                if (shortestPath != undefined) {
+                shortestPathH = findShortestPath(LEFT_CELL, RIGHT_CELL);
+                shortestPathV = findShortestPath(UP_CELL, DOWN_CELL);
+                if (shortestPathH != undefined && shortestPathV != undefined) {
                     let tower = formTower(indexX, indexY, towerType, false);
                     towers.push(tower);
                     score += tower.score;
@@ -513,7 +522,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                 }
                 else {
                     maze[indexX][indexY].removeTower();
-                    shortestPath = findShortestPath(startCell, lastCell);
+                    shortestPathH = findShortestPath(LEFT_CELL, RIGHT_CELL);
+                    shortestPathV = findShortestPath(LEFT_CELL, RIGHT_CELL);
                 }
             }
         }
@@ -533,13 +543,13 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             // Then, open the pause menu
             if (isEmpty(selected)) {
                 cancelNextRequest = true;
+                soundPlayer.pauseSound('music');
                 game.showScreen('pause');
             }
             else {
                 selected.toggleRangeRender();
                 selected = {};
             }
-            soundPlayer.pauseSound('music');
         });
         game.controls = myKeyboard;
 
@@ -569,13 +579,28 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         }
     }
 
-    function formCreep(i) {
+    function formCreep(i, wave) {
+        let creepCenter = {x: 0, y: 0 }
+        let creepDirection = {x: 0, y: 0}
+        let creepRotation = 0;
+        if (LEFT_CELL == startCell) {
+            creepCenter = { x: 0 - (i + .25) * graphics.CELL_WIDTH - wave * graphics.CELL_WIDTH * creepCounts[(level % 3)] * 2, y: graphics.CELL_HEIGHT * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_HEIGHT / 4, graphics.CELL_HEIGHT / 4) }
+            creepDirection = { x: 1, y: 0 }
+            console.log(creepCounts[(level % 3)])
+        }
+        if (UP_CELL == startCell) {
+            creepCenter = { x: graphics.CELL_WIDTH * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_WIDTH / 4, graphics.CELL_WIDTH / 4), y: 0 - (i + .25) * graphics.CELL_HEIGHT - creepCounts[(level % 3)] * wave * graphics.CELL_HEIGHT * 2}
+            creepDirection = { x: 0, y: 1 }
+            creepRotation = Math.PI / 2;
+            console.log(creepCounts[(level % 3)])
+        }
         let spec = {
-            center: { x: 0 - (i + .25) * graphics.CELL_WIDTH, y: graphics.CELL_HEIGHT * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_HEIGHT / 4, graphics.CELL_HEIGHT / 4) },
+            center: creepCenter,
             size: { width: graphics.CELL_WIDTH / 2, height: graphics.CELL_HEIGHT / 2 },
-            direction: { x: 1, y: 0 },
+            direction: creepDirection,
             maze: maze,
-            rotation: 0
+            rotation: creepRotation,
+            vertical: vertical
         }
         let creepType = level % 3;
         switch (creepType) {
@@ -592,13 +617,25 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
 
     function nextLevel() {
         if (levelCooldown <= 0) {
-            for (let i = 0; i < level * 5; i++) {
-                let myCreep = formCreep(i)
-                creeps.push(myCreep);
+            for (let wave = 0; wave < 3; wave++) {
+                for (let i = 0; i < creepCounts[(level % 3)]; i++) {
+                    let myCreep = formCreep(i, wave)
+                    creeps.push(myCreep);
+                }
             }
             levelCooldown = 2000;
-            creepCounts[(level % 3)] = Math.floor(creepCounts[(level % 3)] * 1.4)
+            creepCounts[(level % 3)] = Math.floor(creepCounts[(level % 3)] * 1.4) + 1;
             level += 1;
+            if (startCell == LEFT_CELL) {
+                startCell = UP_CELL;
+                lastCell = DOWN_CELL;
+                vertical = true;
+            }
+            else {
+                startCell = LEFT_CELL;
+                lastCell = RIGHT_CELL;
+                vertical = false;
+            }
         }
     }
 
@@ -681,6 +718,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         bullets = [];
         creeps = [];
         selected = {};
+        creepCounts = [3, 5, 2];
+        vertical = false;
         level = 1;
         soundPlayer.stopSound('music');
         initialize();
