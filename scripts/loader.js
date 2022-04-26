@@ -52,16 +52,8 @@ MyGame.loader = (function () {
         message: 'Main Menu loaded',
         onComplete: null
     }, {
-        scripts: ['controls'],
-        message: 'Controls loaded',
-        onComplete: null
-    }, {
         scripts: ['credits'],
         message: 'Credits loaded',
-        onComplete: null
-    }, {
-        scripts: ['highscores'],
-        message: 'Highscores loaded',
         onComplete: null
     }, {
         scripts: ['pause'],
@@ -70,6 +62,14 @@ MyGame.loader = (function () {
     }, {
         scripts: ['gameplay'],
         message: 'Game loop loaded',
+        onComplete: null
+    }, {
+        scripts: ['highscores'],
+        message: 'Highscores loaded',
+        onComplete: null
+    }, {
+        scripts: ['controls'],
+        message: 'Controls loaded',
         onComplete: null
     }];
 

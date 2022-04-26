@@ -29,7 +29,7 @@ let Random = (function() {
     }
 
     function nextConstrainedCircleVector(min, max) {
-        let angle = nextFlipFlop(min, max) * Math.PI / 180;
+        let angle = nextRange(min, max) * Math.PI / 180;
         return {
             x: Math.cos(angle),
             y: Math.sin(angle)

@@ -63,7 +63,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let lastCell = {};
     let shortestPath = [];
 
-    let myKeyboard = input.Keyboard();
+    let myKeyboard = {};
     let myMouse = input.Mouse();
 
     let creeps = [];
@@ -363,27 +363,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             localStorage['MyGame.highscores'] = JSON.stringify([0, 0, 0, 0, 0])
         }
         if (localStorage.getItem('MyGame.controls') === null) {
-            myKeyboard.registerCommand(83, upgrade);
-            myKeyboard.registerCommand(85, sell);
-            myKeyboard.registerCommand(71, nextLevel);
-            localStorage['MyGame.controls'] = JSON.stringify([83, 85, 71]);
+            localStorage['MyGame.controls'] = JSON.stringify([85, 83, 71]);
         }
-        myKeyboard.registerCommand(27, function () {
-            //
-            // Stop the game loop by canceling the request for the next animation frame
-            //
-            // Then, open the pause menu
-            if (isEmpty(selected)) {
-                cancelNextRequest = true;
-                game.showScreen('pause');
-            }
-            else {
-                selected.toggleRangeRender();
-                selected = {};
-            }
-            soundPlayer.pauseSound('music');
-        });
-        game.controls = myKeyboard;
 
         //
         // Whenever the mouse is moved, check to see if a potential turret needs to be rendered,
@@ -539,10 +520,28 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     }
 
     function run() {
+        myKeyboard = input.Keyboard();
         let controls = JSON.parse(localStorage.getItem('MyGame.controls'));
         myKeyboard.registerCommand(controls[0], upgrade);
         myKeyboard.registerCommand(controls[1], sell);
         myKeyboard.registerCommand(controls[2], nextLevel);
+
+        myKeyboard.registerCommand(27, function () {
+            //
+            // Stop the game loop by canceling the request for the next animation frame
+            //
+            // Then, open the pause menu
+            if (isEmpty(selected)) {
+                cancelNextRequest = true;
+                game.showScreen('pause');
+            }
+            else {
+                selected.toggleRangeRender();
+                selected = {};
+            }
+            soundPlayer.pauseSound('music');
+        });
+        game.controls = myKeyboard;
 
         lastTimeStamp = performance.now();
         cancelNextRequest = false;
