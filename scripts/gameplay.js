@@ -13,13 +13,15 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let UP_CELL = {};
     let DOWN_CELL = {};
     let vertical = false;
+    let playing = true;
+    let endCountdown = 5000;
 
     let towerType = 1;
     let level = 1;
     let creepCounts = [3, 5, 2]
     let levelCooldown = 0;
     let score = 0;
-    let playerHealth = 30;
+    let playerHealth = 20;
     let money = 1000;
     let myScore = objects.Text({
         text: 'Score: ' + score.toString(),
@@ -35,10 +37,24 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         strokeStyle: 'rgba(0, 0, 0, 1)',
         position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 2 }
     });
+    let gameOver = objects.Text({
+        text: 'Game Over',
+        font: '24pt Times New Roman',
+        fillStyle: 'rgba(255, 0, 0, 1)',
+        strokeStyle: 'rgba(0, 0, 0, 1)',
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 2 }
+    });
     let myMoney = objects.Text({
         text: 'Money: ' + money.toString(),
         font: '24pt Times New Roman',
         fillStyle: 'rgba(255, 255, 255, 1)',
+        strokeStyle: 'rgba(0, 0, 0, 1)',
+        position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 3 }
+    });
+    let countdown = objects.Text({
+        text: 'Quitting: ',
+        font: '24pt Times New Roman',
+        fillStyle: 'rgba(255, 0, 0, 1)',
         strokeStyle: 'rgba(0, 0, 0, 1)',
         position: { x: graphics.SHOP_BEGIN / 2, y: graphics.HUD_BEGIN + (graphics.CANVAS_HEIGHT - graphics.HUD_BEGIN) / 5 * 3 }
     });
@@ -192,66 +208,82 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     //
     //------------------------------------------------------------------
     function update(elapsedTime) {
-        for (let i = 0; i < particlesList.length; i++) {
-            particlesList[i].update(elapsedTime);
-        }
-        for (let i = 0; i < floatingScores.length; i++) {
-            floatingScores[i].update(elapsedTime);
-            if (!floatingScores[i].active) {
-                floatingScores.splice(i, 1);
+        if (playing) {
+            for (let i = 0; i < particlesList.length; i++) {
+                particlesList[i].update(elapsedTime);
             }
-        }
-        for (let i = 0; i < towers.length; i++) {
-            towers[i].update(elapsedTime);
-            if (!towers[i].active) {
-                towers.splice(i, 1)
-            }
-        }
-        for (let i = 0; i < creeps.length; i++) {
-            creeps[i].update(elapsedTime);
-            if (!creeps[i].active) {
-                if (creeps[i].escaped) {
-                    playerHealth -= 1;
-                    creeps.splice(i, 1);
-                }
-                else {
-                    particlesList.push(createSmokeParticles(creeps[i]));
-                    floatingScores.push(createFloatingScore(creeps[i]));
-                    let reward = creeps.splice(i, 1)[0].score;
-                    score += reward;
-                    money += reward;
+            for (let i = 0; i < floatingScores.length; i++) {
+                floatingScores[i].update(elapsedTime);
+                if (!floatingScores[i].active) {
+                    floatingScores.splice(i, 1);
                 }
             }
-        }
-        for (let i = 0; i < bullets.length; i++) {
-            bullets[i].update(elapsedTime);
-            for (let j = 0; j < creeps.length; j++) {
-                if (intersectBullets(bullets[i], creeps[j])) {
-                    let canHit = bullets[i].flying == creeps[j].isFlying || bullets[i].ground == !creeps[j].isFlying;
-                    if (bullets[i].type == 1 && canHit) {
-                        creeps[j].currentHealth -= bullets[i].damage;
-                        bullets[i].active = false;
+            for (let i = 0; i < towers.length; i++) {
+                towers[i].update(elapsedTime);
+                if (!towers[i].active) {
+                    towers.splice(i, 1)
+                }
+            }
+            for (let i = 0; i < creeps.length; i++) {
+                creeps[i].update(elapsedTime);
+                if (!creeps[i].active) {
+                    if (creeps[i].escaped) {
+                        playerHealth -= 1;
+                        creeps.splice(i, 1);
                     }
-                    else if (canHit) {
-                        creeps[j].currentHealth -= bullets[i].damage;
-                        bullets[i].active = false;
-                        particlesList.push(createExplosionParticles(bullets[i]))
-                        for (let k = 0; k < creeps.length; k++) {
-                            if (inExplosiveRange(bullets[i], creeps[k])) {
-                                creeps[k].currentHealth -= bullets[i].damage;
+                    else {
+                        particlesList.push(createSmokeParticles(creeps[i]));
+                        floatingScores.push(createFloatingScore(creeps[i]));
+                        let reward = creeps.splice(i, 1)[0].score;
+                        score += reward;
+                        money += reward;
+                    }
+                }
+            }
+            for (let i = 0; i < bullets.length; i++) {
+                bullets[i].update(elapsedTime);
+                for (let j = 0; j < creeps.length; j++) {
+                    if (intersectBullets(bullets[i], creeps[j])) {
+                        let canHit = bullets[i].flying == creeps[j].isFlying || bullets[i].ground == !creeps[j].isFlying;
+                        if (bullets[i].type == 1 && canHit) {
+                            creeps[j].currentHealth -= bullets[i].damage;
+                            bullets[i].active = false;
+                        }
+                        else if (canHit) {
+                            creeps[j].currentHealth -= bullets[i].damage;
+                            bullets[i].active = false;
+                            particlesList.push(createExplosionParticles(bullets[i]))
+                            for (let k = 0; k < creeps.length; k++) {
+                                if (inExplosiveRange(bullets[i], creeps[k])) {
+                                    creeps[k].currentHealth -= bullets[i].damage;
+                                }
                             }
                         }
                     }
                 }
+                if (!bullets[i].active) {
+                    bullets.splice(i, 1);
+                }
             }
-            if (!bullets[i].active) {
-                bullets.splice(i, 1);
+            if (levelCooldown > 0) {
+                levelCooldown -= elapsedTime;
+            }
+            if (playerHealth <= 0) {
+                playing = false;
+            }
+            myHealth.updateText('Life: ' + playerHealth.toString());
+            myMoney.updateText('Money: ' + money.toString());
+            myScore.updateText('Score: ' + score.toString());
+            myLevel.updateText('Level: ' + level.toString());
+        }
+        else {
+            endCountdown -= elapsedTime;
+            countdown.updateText('Quitting: ' + Math.floor(endCountdown / 1000).toString())
+            if (endCountdown <= 0) {
+                cancelNextRequest = true;
+                quit();
             }
         }
-        if (levelCooldown > 0) {
-            levelCooldown -= elapsedTime;
-        }
-
     }
 
     //------------------------------------------------------------------
@@ -279,19 +311,21 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         for (let i = 0; i < shopList.length; i++) {
             shopList[i].render();
         }
-        myScore.updateText('Score: ' + score.toString());
         myScore.render();
-        myHealth.updateText('Life: ' + playerHealth.toString());
-        myHealth.render();
-        myMoney.updateText('Money: ' + money.toString());
-        myMoney.render();
-        myLevel.updateText('Level: ' + level.toString());
         myLevel.render();
         for (let i = 0; i < particlesList.length; i++) {
             graphics.renderParticles(particlesList[i]);
         }
         for (let i = 0; i < floatingScores.length; i++) {
             floatingScores[i].render();
+        }
+        if (!playing) {
+            gameOver.render();
+            countdown.render();
+        }
+        else {
+            myHealth.render();
+            myMoney.render();
         }
     }
 
@@ -328,8 +362,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         RIGHT_CELL = maze[14][7];
         UP_CELL = maze[7][0];
         DOWN_CELL = maze[7][14];
-        UP_CELL.direction = {x: 0, y: 1}
-        DOWN_CELL.direction = {x: 0, y: 1}
+        UP_CELL.direction = { x: 0, y: 1 }
+        DOWN_CELL.direction = { x: 0, y: 1 }
         let entryPoints = [LEFT_CELL, RIGHT_CELL, UP_CELL, DOWN_CELL];
 
         startCell = LEFT_CELL;
@@ -580,8 +614,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     }
 
     function formCreep(i, wave) {
-        let creepCenter = {x: 0, y: 0 }
-        let creepDirection = {x: 0, y: 0}
+        let creepCenter = { x: 0, y: 0 }
+        let creepDirection = { x: 0, y: 0 }
         let creepRotation = 0;
         if (LEFT_CELL == startCell) {
             creepCenter = { x: 0 - (i + .25) * graphics.CELL_WIDTH - wave * graphics.CELL_WIDTH * creepCounts[(level % 3)] * 2, y: graphics.CELL_HEIGHT * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_HEIGHT / 4, graphics.CELL_HEIGHT / 4) }
@@ -589,7 +623,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             console.log(creepCounts[(level % 3)])
         }
         if (UP_CELL == startCell) {
-            creepCenter = { x: graphics.CELL_WIDTH * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_WIDTH / 4, graphics.CELL_WIDTH / 4), y: 0 - (i + .25) * graphics.CELL_HEIGHT - creepCounts[(level % 3)] * wave * graphics.CELL_HEIGHT * 2}
+            creepCenter = { x: graphics.CELL_WIDTH * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_WIDTH / 4, graphics.CELL_WIDTH / 4), y: 0 - (i + .25) * graphics.CELL_HEIGHT - creepCounts[(level % 3)] * wave * graphics.CELL_HEIGHT * 2 }
             creepDirection = { x: 0, y: 1 }
             creepRotation = Math.PI / 2;
             console.log(creepCounts[(level % 3)])
@@ -712,7 +746,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             localStorage['MyGame.highscores'] = JSON.stringify(scores);
             score = 0;
         }
-        playerHealth = 30;
+        playerHealth = 20;
         money = 1000;
         towers = [];
         bullets = [];
@@ -721,6 +755,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         creepCounts = [3, 5, 2];
         vertical = false;
         level = 1;
+        playing = true;
+        endCountdown = 5000;
         soundPlayer.stopSound('music');
         initialize();
         game.showScreen('main-menu');
