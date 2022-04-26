@@ -32,12 +32,12 @@ MyGame.loader = (function () {
         message: 'Sound player loaded',
         onComplete: null
     }, {
-        scripts: ['gameobjects'],
-        message: 'Game objects loaded',
-        onComplete: null
-    }, {
         scripts: ['particle-system'],
         message: 'Particle systems loaded',
+        onComplete: null
+    }, {
+        scripts: ['gameobjects'],
+        message: 'Game objects loaded',
         onComplete: null
     }, {
         scripts: ['random'],

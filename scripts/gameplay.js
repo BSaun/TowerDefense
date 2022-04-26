@@ -487,6 +487,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             creepList: creeps,
             renderRange: renderRange,
             renderCost: false,
+            particlesList: particlesList,
             bullets: bullets,
             rotateRate: 20 * 3.14159 / 1000 // radians per second
         }

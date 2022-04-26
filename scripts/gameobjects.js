@@ -1,5 +1,5 @@
 
-MyGame.objects = (function (graphics, assets, soundPlayer) {
+MyGame.objects = (function (graphics, assets, soundPlayer, systems) {
     'use strict';
 
     //------------------------------------------------------------------
@@ -511,6 +511,7 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 10;
             spec.bullets.push(missile(bulletSpec));
+            spec.particlesList.push(systems.missileTrail(spec));
             soundPlayer.stopSound('miss_fire');
             soundPlayer.playSound('miss_fire', false);
         };
@@ -534,8 +535,7 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
         spec.fire = function () {
             let bulletSpec = JSON.parse(JSON.stringify(spec));
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
-            bulletSpec.damage = 1.5;
-            spec.bullets.push(bullet(bulletSpec));
+            bulletSpec.damage = 2.5;
             spec.bullets.push(bullet(bulletSpec));
             soundPlayer.stopSound('flak_fire');
             soundPlayer.playSound('flak_fire', false);
@@ -683,4 +683,4 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
         flakTower: flakTower
     };
 
-}(MyGame.graphics, MyGame.assets, MyGame.player));
+}(MyGame.graphics, MyGame.assets, MyGame.player, MyGame.systems));

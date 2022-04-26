@@ -38,6 +38,13 @@ MyGame.systems = function(assets) {
         function update(elapsedTime) {
             let removeMe = [];
 
+            if(spec.moveSpeed != 0) {
+                let systemDirection = { x: Math.cos(spec.rotation), y: Math.sin(spec.rotation) }
+
+                spec.center.x += spec.moveSpeed * elapsedTime * systemDirection.x;
+                spec.center.y += spec.moveSpeed * elapsedTime * systemDirection.y;
+            }
+
             //
             // We work with time in seconds, elapsedTime comes in as milliseconds
             elapsedTime = elapsedTime / 1000;
@@ -100,6 +107,7 @@ MyGame.systems = function(assets) {
             lifetime: { mean: .25, stdev: .05 },
             systemLifetime: .5,
             density: 1,
+            moveSpeed: 0,
             image: assets['smoke']
         });
     }
@@ -110,8 +118,10 @@ MyGame.systems = function(assets) {
             size: { mean: 5, stdev: 4 },
             speed: { mean: 50, stdev: 5 },
             lifetime: { mean: .25, stdev: .05 },
-            systemLifetime: .5,
+            systemLifetime: 2,
+            rotation: spec.rotation,
             density: 1,
+            moveSpeed: spec.moveSpeed,
             image: assets['smoke']
         });
     }
@@ -124,6 +134,7 @@ MyGame.systems = function(assets) {
             lifetime: { mean: .25, stdev: .05 },
             systemLifetime: .5,
             density: 1,
+            moveSpeed: 0,
             image: assets['fireworks']
         });
     }
@@ -136,6 +147,7 @@ MyGame.systems = function(assets) {
             lifetime: { mean: .15, stdev: .05 },
             systemLifetime: .25,
             density: 3,
+            moveSpeed: 0,
             image: assets['fire']
         });
     }
