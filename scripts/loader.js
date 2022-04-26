@@ -77,11 +77,26 @@ MyGame.loader = (function () {
         key: 'proj_fire',
         source: '/audio/proj_fire.mp3'
     }, {
+        key: 'pizz',
+        source: '/audio/Pizz.mp3'
+    }, {
+        key: 'miss_fire',
+        source: '/audio/miss_fire.mp3'
+    }, {
+        key: 'flak_fire',
+        source: '/audio/flak_fire.mp3'
+    }, {
+        key: 'bomb_fire',
+        source: '/audio/bomb_fire.mp3'
+    }, {
         key: 'smoke',
         source: '/assets/smoke.png'
     }, {
         key: 'fireworks',
         source: '/assets/fireworks.png'
+    }, {
+        key: 'fire',
+        source: '/assets/fire.png'
     }, {
         key: 'creep',
         source: '/assets/creep-1.png'

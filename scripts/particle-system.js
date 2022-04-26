@@ -73,7 +73,7 @@ MyGame.systems.ParticleSystem = function(spec) {
         //
         // Generate some new particles
         if(spec.systemLifetime > 0) {
-            for (let particle = 0; particle < 1; particle++) {
+            for (let particle = 0; particle < spec.density; particle++) {
                 //
                 // Assign a unique name to each particle
                 particles[nextName++] = create();

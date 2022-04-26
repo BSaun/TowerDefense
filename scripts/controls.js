@@ -55,8 +55,8 @@ MyGame.screens['controls'] = (function(game) {
     }
 
     function run() {
-        document.getElementById('id-controls-upgrade').innerHTML = 'Sell: ' + String.fromCharCode(controls[0]).toLowerCase();
-        document.getElementById('id-controls-sell').innerHTML = 'Upgrade: ' + String.fromCharCode(controls[1]).toLowerCase();
+        document.getElementById('id-controls-upgrade').innerHTML = 'Upgrade: ' + String.fromCharCode(controls[0]).toLowerCase();
+        document.getElementById('id-controls-sell').innerHTML = 'Sell: ' + String.fromCharCode(controls[1]).toLowerCase();
         document.getElementById('id-controls-next-level').innerHTML = 'Next Level: ' + String.fromCharCode(controls[2]).toLowerCase();
     }
     

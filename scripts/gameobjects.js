@@ -446,7 +446,8 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 10;
             spec.bullets.push(bullet(bulletSpec));
-            assets['proj_fire'].play();
+            soundPlayer.stopSound('proj_fire');
+            soundPlayer.playSound('proj_fire', false);
         };
         spec.fireCooldown = 1000;
 
@@ -469,8 +470,10 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 500;
             bulletSpec.damage = 10;
             spec.bullets.push(bomb(bulletSpec));
+            soundPlayer.stopSound('bomb_fire');
+            soundPlayer.playSound('bomb_fire', false);
         };
-        spec.fireCooldown = 1500;
+        spec.fireCooldown = 2000;
 
         let that = Tower(spec);
         return that;
@@ -491,6 +494,8 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 10;
             spec.bullets.push(missile(bulletSpec));
+            soundPlayer.stopSound('miss_fire');
+            soundPlayer.playSound('miss_fire', false);
         };
         spec.fireCooldown = 600;
 
@@ -515,7 +520,8 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
             bulletSpec.damage = 1.5;
             spec.bullets.push(bullet(bulletSpec));
             spec.bullets.push(bullet(bulletSpec));
-            soundPlayer.playSound('proj_fire', false);
+            soundPlayer.stopSound('flak_fire');
+            soundPlayer.playSound('flak_fire', false);
         };
         spec.fireCooldown = 200;
 

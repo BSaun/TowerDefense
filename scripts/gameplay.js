@@ -230,6 +230,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                     else if (canHit) {
                         creeps[j].currentHealth -= bullets[i].damage;
                         bullets[i].active = false;
+                        particlesList.push(createExplosionParticles(bullets[i]))
                         for (let k = 0; k < creeps.length; k++) {
                             if (inExplosiveRange(bullets[i], creeps[k])) {
                                 creeps[k].currentHealth -= bullets[i].damage;
@@ -380,7 +381,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                 selected.toggleRangeRender();
                 selected = {};
             }
-
+            soundPlayer.pauseSound('music');
         });
         game.controls = myKeyboard;
 
@@ -539,12 +540,14 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
 
     function run() {
         let controls = JSON.parse(localStorage.getItem('MyGame.controls'));
-        myKeyboard.registerCommand(controls[0], sell);
-        myKeyboard.registerCommand(controls[1], upgrade);
+        myKeyboard.registerCommand(controls[0], upgrade);
+        myKeyboard.registerCommand(controls[1], sell);
         myKeyboard.registerCommand(controls[2], nextLevel);
 
         lastTimeStamp = performance.now();
         cancelNextRequest = false;
+
+        soundPlayer.playSound('music', true);
         requestAnimationFrame(gameLoop);
     }
 
@@ -624,6 +627,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             speed: { mean: 25, stdev: 5 },
             lifetime: { mean: .25, stdev: .05 },
             systemLifetime: .5,
+            density: 1,
             image: assets['smoke']
         });
     }
@@ -635,7 +639,20 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             speed: { mean: 80, stdev: 5 },
             lifetime: { mean: .25, stdev: .05 },
             systemLifetime: .5,
+            density: 1,
             image: assets['fireworks']
+        });
+    }
+
+    function createExplosionParticles(spec) {
+        return systems.ParticleSystem({
+            center: { x: spec.center.x, y: spec.center.y },
+            size: { mean: 7, stdev: 2 },
+            speed: { mean: 200, stdev: 5 },
+            lifetime: { mean: .15, stdev: .05 },
+            systemLifetime: .25,
+            density: 3,
+            image: assets['fire']
         });
     }
 
@@ -645,7 +662,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             font: '12pt Times New Roman',
             fillStyle: 'rgba(255, 255, 255, 1)',
             strokeStyle: 'rgba(0, 0, 0, 1)',
-            position: { x: spec.center.x, y: spec.center.y},
+            position: { x: spec.center.x, y: spec.center.y },
             time: 1000
         });
     }
@@ -665,6 +682,8 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         bullets = [];
         creeps = [];
         selected = {};
+        level = 1;
+        soundPlayer.stopSound('music');
         initialize();
         game.showScreen('main-menu');
     }
