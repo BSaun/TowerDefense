@@ -69,6 +69,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let creeps = [];
     let walls = [];
     let bullets = [];
+    let floatingScores = [];
 
     let potentialTurret = formTower(MAZE_SIZE * 2, MAZE_SIZE * 2, towerType, false);
 
@@ -189,6 +190,12 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         for (let i = 0; i < particlesList.length; i++) {
             particlesList[i].update(elapsedTime);
         }
+        for (let i = 0; i < floatingScores.length; i++) {
+            floatingScores[i].update(elapsedTime);
+            if (!floatingScores[i].active) {
+                floatingScores.splice(i, 1);
+            }
+        }
         for (let i = 0; i < towers.length; i++) {
             towers[i].update(elapsedTime);
             if (!towers[i].active) {
@@ -204,6 +211,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
                 }
                 else {
                     particlesList.push(createSmokeParticles(creeps[i]));
+                    floatingScores.push(createFloatingScore(creeps[i]));
                     let reward = creeps.splice(i, 1)[0].score;
                     score += reward;
                     money += reward;
@@ -275,6 +283,9 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         myLevel.render();
         for (let i = 0; i < particlesList.length; i++) {
             graphics.renderParticles(particlesList[i]);
+        }
+        for (let i = 0; i < floatingScores.length; i++) {
+            floatingScores[i].render();
         }
     }
 
@@ -625,6 +636,17 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
             lifetime: { mean: .25, stdev: .05 },
             systemLifetime: .5,
             image: assets['fireworks']
+        });
+    }
+
+    function createFloatingScore(spec) {
+        return objects.Text({
+            text: spec.score.toString(),
+            font: '12pt Times New Roman',
+            fillStyle: 'rgba(255, 255, 255, 1)',
+            strokeStyle: 'rgba(0, 0, 0, 1)',
+            position: { x: spec.center.x, y: spec.center.y},
+            time: 1000
         });
     }
 

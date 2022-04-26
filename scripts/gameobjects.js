@@ -631,9 +631,17 @@ MyGame.objects = (function (graphics, assets, soundPlayer) {
 
     function Text(spec) {
         let that = {};
+        that.active = true;
         that.updateText = function(newText) {spec.text = newText}
         that.render = function () {
             graphics.drawText(spec);
+        }
+        that.update = function(elapsedTime) {
+            spec.position.y -= (graphics.CELL_HEIGHT / 1000) * elapsedTime;
+            spec.time -= elapsedTime;
+            if (spec.time <= 0) {
+                that.active = false;
+            }
         }
     
         return that;
