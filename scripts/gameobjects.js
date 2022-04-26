@@ -487,6 +487,7 @@ MyGame.objects = (function (graphics, assets, soundPlayer, systems) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 500;
             bulletSpec.damage = 10;
             spec.bullets.push(bomb(bulletSpec));
+            spec.particlesList.push(systems.missileTrail(bulletSpec));
             soundPlayer.stopSound('bomb_fire');
             soundPlayer.playSound('bomb_fire', false);
         };
@@ -511,7 +512,7 @@ MyGame.objects = (function (graphics, assets, soundPlayer, systems) {
             bulletSpec.moveSpeed = graphics.CELL_WIDTH / 100;
             bulletSpec.damage = 10;
             spec.bullets.push(missile(bulletSpec));
-            spec.particlesList.push(systems.missileTrail(spec));
+            spec.particlesList.push(systems.missileTrail(bulletSpec));
             soundPlayer.stopSound('miss_fire');
             soundPlayer.playSound('miss_fire', false);
         };

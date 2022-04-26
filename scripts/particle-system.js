@@ -39,10 +39,8 @@ MyGame.systems = function(assets) {
             let removeMe = [];
 
             if(spec.moveSpeed != 0) {
-                let systemDirection = { x: Math.cos(spec.rotation), y: Math.sin(spec.rotation) }
-
-                spec.center.x += spec.moveSpeed * elapsedTime * systemDirection.x;
-                spec.center.y += spec.moveSpeed * elapsedTime * systemDirection.y;
+                spec.center.x += spec.systemSpeed * elapsedTime * Math.cos(spec.rotation);
+                spec.center.y += spec.systemSpeed * elapsedTime * Math.sin(spec.rotation);
             }
 
             //
@@ -118,10 +116,10 @@ MyGame.systems = function(assets) {
             size: { mean: 5, stdev: 4 },
             speed: { mean: 50, stdev: 5 },
             lifetime: { mean: .25, stdev: .05 },
-            systemLifetime: 2,
+            systemLifetime: .5,
             rotation: spec.rotation,
             density: 1,
-            moveSpeed: spec.moveSpeed,
+            systemSpeed: spec.moveSpeed,
             image: assets['smoke']
         });
     }

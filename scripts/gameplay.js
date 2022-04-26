@@ -23,7 +23,7 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
     let levelCooldown = 0;
     let score = 0;
     let playerHealth = 20;
-    let musicCooldown = 1500;
+    let musicCooldown = 0;
     let money = 1000;
     let myScore = objects.Text({
         text: 'Score: ' + score.toString(),
@@ -626,13 +626,11 @@ MyGame.screens['game-play'] = (function (game, objects, graphics, input, systems
         if (LEFT_CELL == startCell) {
             creepCenter = { x: 0 - (i + .25) * graphics.CELL_WIDTH - wave * graphics.CELL_WIDTH * creepCounts[(level % 3)] * 2, y: graphics.CELL_HEIGHT * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_HEIGHT / 4, graphics.CELL_HEIGHT / 4) }
             creepDirection = { x: 1, y: 0 }
-            console.log(creepCounts[(level % 3)])
         }
         if (UP_CELL == startCell) {
             creepCenter = { x: graphics.CELL_WIDTH * (MAZE_SIZE / 2) + Random.nextRange(-graphics.CELL_WIDTH / 4, graphics.CELL_WIDTH / 4), y: 0 - (i + .25) * graphics.CELL_HEIGHT - creepCounts[(level % 3)] * wave * graphics.CELL_HEIGHT * 2 }
             creepDirection = { x: 0, y: 1 }
             creepRotation = Math.PI / 2;
-            console.log(creepCounts[(level % 3)])
         }
         let spec = {
             center: creepCenter,
